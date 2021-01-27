@@ -1,6 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 
 import torch
+from typing import Optional
 from torch.nn import functional as F
 
 
@@ -9,6 +10,7 @@ def sigmoid_focal_loss(
     targets: torch.Tensor,
     alpha: float = -1,
     gamma: float = 2,
+    weight: Optional[torch.Tensor] = None,
     reduction: str = "none",
 ) -> torch.Tensor:
     """
@@ -39,6 +41,9 @@ def sigmoid_focal_loss(
         alpha_t = alpha * targets + (1 - alpha) * (1 - targets)
         loss = alpha_t * loss
 
+    if weight is not None:
+        loss *= weight
+
     if reduction == "mean":
         loss = loss.mean()
     elif reduction == "sum":
@@ -57,6 +62,7 @@ def sigmoid_focal_loss_star(
     targets: torch.Tensor,
     alpha: float = -1,
     gamma: float = 1,
+    weight: Optional[torch.Tensor] = None,
     reduction: str = "none",
 ) -> torch.Tensor:
     """
@@ -83,6 +89,9 @@ def sigmoid_focal_loss_star(
     if alpha >= 0:
         alpha_t = alpha * targets + (1 - alpha) * (1 - targets)
         loss *= alpha_t
+
+    if weight is not None:
+        loss *= weight
 
     if reduction == "mean":
         loss = loss.mean()
